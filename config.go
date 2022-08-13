@@ -39,6 +39,15 @@ func LoadConfig(cfgPath string, fallback cfg.Config) (config cfg.Config, err err
 		config.ServiceCodes = cfg.DefaultConfig.ServiceCodes
 	}
 
+	// Ensure we have a default AX.25 engine
+	if config.AX25.Engine == "" {
+		config.AX25.Engine = cfg.DefaultAX25Engine()
+	}
+
+	if config.AGWPE == (cfg.AGWPEConfig{}) {
+		config.AGWPE = cfg.DefaultConfig.AGWPE
+	}
+
 	// Ensure Pactor has a default value
 	if config.Pactor == (cfg.PactorConfig{}) {
 		config.Pactor = cfg.DefaultConfig.Pactor

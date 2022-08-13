@@ -85,9 +85,9 @@ func printInteractiveUsage() {
 
 	methods := []string{
 		MethodArdop,
-		MethodAX25,
+		MethodAX25, MethodAX25AGWPE, MethodAX25Linux, MethodAX25SerialTNC,
+		MethodPactor,
 		MethodTelnet,
-		MethodSerialTNC,
 	}
 	fmt.Println("Methods:", strings.Join(methods, ", "))
 
@@ -135,7 +135,7 @@ func PrintHeard() {
 	}
 
 	fmt.Println("ax25:")
-	if heard, err := ax25.Heard(config.AX25.Port); err != nil {
+	if heard, err := ax25.Heard(config.AX25.AXPort); err != nil {
 		fmt.Printf("  (%s)\n", err)
 	} else if len(heard) == 0 {
 		fmt.Println("  (none)")

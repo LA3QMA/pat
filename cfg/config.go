@@ -86,6 +86,7 @@ type Config struct {
 	HamlibRigs map[string]HamlibConfig `json:"hamlib_rigs"`
 
 	AX25      AX25Config      `json:"ax25"`       // See AX25Config.
+	AGWPE     AGWPEConfig     `json:"agwpe"`      // See AGWPEConfig.
 	SerialTNC SerialTNCConfig `json:"serial-tnc"` // See SerialTNCConfig.
 	Ardop     ArdopConfig     `json:"ardop"`      // See ArdopConfig.
 	Pactor    PactorConfig    `json:"pactor"`     // See PactorConfig.
@@ -218,17 +219,30 @@ type SerialTNCConfig struct {
 
 	// Type of TNC (currently only 'kenwood').
 	Type string `json:"type"`
-}
-
-type AX25Config struct {
-	// axport to use (as defined in /etc/ax25/axports).
-	Port string `json:"port"`
-
-	// Optional beacon when listening for incoming packet-p2p connections.
-	Beacon BeaconConfig `json:"beacon"`
 
 	// (optional) Reference name to the Hamlib rig for frequency control.
 	Rig string `json:"rig"`
+}
+
+type AGWPEConfig struct {
+	// The TCP address of the TNC.
+	Addr string `json:"addr"`
+
+	// The AGWPE "radio port" (1-4).
+	RadioPort int `json:"radio_port"`
+}
+
+type AX25Config struct {
+	Engine AX25Engine `json:"engine"`
+
+	// (optional) Reference name to the Hamlib rig for frequency control.
+	Rig string `json:"rig"`
+
+	// axport to use (as defined in /etc/ax25/axports). Only applicable to engine 'linux'.
+	AXPort string `json:"port"`
+
+	// Optional beacon when listening for incoming packet-p2p connections. Only supported with engine 'linux'.
+	Beacon BeaconConfig `json:"beacon"`
 }
 
 type BeaconConfig struct {
@@ -270,7 +284,8 @@ var DefaultConfig = Config{
 	Listen:   []string{},
 	HTTPAddr: "localhost:8080",
 	AX25: AX25Config{
-		Port: "wl2k",
+		Engine: DefaultAX25Engine(),
+		AXPort: "wl2k",
 		Beacon: BeaconConfig{
 			Every:       3600,
 			Message:     "Winlink P2P",
@@ -282,6 +297,10 @@ var DefaultConfig = Config{
 		SerialBaud: 9600,
 		HBaud:      1200,
 		Type:       "Kenwood",
+	},
+	AGWPE: AGWPEConfig{
+		Addr:      "localhost:8000",
+		RadioPort: 0,
 	},
 	Ardop: ArdopConfig{
 		Addr:         "localhost:8515",
