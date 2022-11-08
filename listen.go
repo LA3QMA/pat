@@ -32,8 +32,6 @@ func Listen(listenStr string) {
 		switch strings.ToLower(method) {
 		case MethodArdop:
 			listenHub.Enable(ARDOPListener{})
-		case MethodVara:
-			listenHub.Enable(VARAListener{})			
 		case MethodTelnet:
 			listenHub.Enable(TelnetListener{})
 		case MethodAX25:
@@ -95,34 +93,6 @@ func (l *AX25Listener) beaconLoop(dur time.Duration) chan<- struct{} {
 
 func (l *AX25Listener) CurrentFreq() (Frequency, bool) { return 0, false }
 func (l *AX25Listener) Name() string                   { return MethodAX25 }
-
-type VARAListener struct{}
-
-func (l VARAListener) Name() string { return MethodVara }
-func (l VARAListener) Init() (net.Listener, error) {
-	if err := initVaraTNC(); err != nil {
-		return nil, err
-	}
-	ln, err := adTNC.Listen()
-	if err != nil {
-		return nil, err
-	}
-	return ln, err
-}
-
-func (l VARAListener) CurrentFreq() (Frequency, bool) {
-	if rig, ok := rigs[config.Vara.Rig]; ok {
-		f, _ := rig.GetFreq()
-		return Frequency(f), ok
-	}
-	return 0, false
-}
-
-func (l VARAListener) BeaconStart() error {
-	return adTNC.BeaconEvery(time.Duration(config.Vara.BeaconInterval) * time.Second)
-}
-
-func (l VARAListener) BeaconStop() { adTNC.BeaconEvery(0) }
 
 type ARDOPListener struct{}
 
